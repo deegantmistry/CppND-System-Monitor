@@ -81,10 +81,10 @@ float LinuxParser::MemoryUtilization() {
       std::istringstream linestream(line);
       while (linestream >> key >> value) {
         if (key == "MemTotal:") {
-          mem_total = value / 1024;
+          mem_total = value;
         } else if (key == "MemFree:") {
-          mem_free = value / 1024;
-          break;
+          mem_free = value;
+          return (mem_total - mem_free) / mem_total;
         }
       }
     }
