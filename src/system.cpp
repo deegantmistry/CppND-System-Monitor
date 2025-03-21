@@ -27,10 +27,18 @@ Processor& System::Cpu() { return cpu_; }
 
 // TODO: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
+  // string log_file =
+  //     "/home/ds/projects/udacity-cpp-projects/CppND-System-Monitor/"
+  //     "process_uptime.log";
+  // std::ofstream ofile(log_file, std::ios::app);
+
   for (int pid : LinuxParser::Pids()) {
+    // ofile << "Pid: " << pid << "\n";
     Process p(pid);
     processes_.push_back(p);
   }
+
+  // ofile.close();
   return processes_;
 }
 

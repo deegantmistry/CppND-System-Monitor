@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -213,4 +214,24 @@ string LinuxParser::User(int pid [[maybe_unused]]) { return string(); }
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid [[maybe_unused]]) { return 0; }
+long LinuxParser::UpTime(int pid) {
+  string line, uptime;
+  std::ifstream filestream(kProcDirectory + "/" + to_string(pid) +
+                           kStatFilename);
+  // std::ofstream ofile(
+  //     "/home/ds/projects/udacity-cpp-projects/CppND-System-Monitor/"
+  //     "process_uptime.log");
+
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    for (int i = 0; i <= 21; i++) {
+      linestream >> uptime;
+      // ofile << "Pid: " << pid << " Uptime: " << uptime << "\n";
+    }
+  }
+  // ofile.close();
+  long process_uptime = std::stol(uptime) / sysconf(_SC_CLK_TCK);
+  return process_uptime;
+  // return 0;
+}
