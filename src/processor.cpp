@@ -43,6 +43,17 @@ float Processor::Utilization() {
     float totald = Total - PrevTotal;
     float idled = Idle - PrevIdle;
 
+    user_ = user;
+    nice_ = nice;
+    system_ = system;
+    idle_ = idle;
+    iowait_ = iowait;
+    irq_ = irq;
+    softirq_ = softirq;
+    steal_ = steal;
+    guest_ = guest;
+    guest_nice_ = guest_nice;
+
     return (totald - idled) / totald;
   }
 
