@@ -22,6 +22,8 @@ system."
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
 
+System::System() { cpu_ = Processor(); }
+
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
