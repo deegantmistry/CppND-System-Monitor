@@ -236,20 +236,13 @@ long LinuxParser::UpTime(int pid) {
   string line, uptime;
   std::ifstream filestream(kProcDirectory + "/" + to_string(pid) +
                            kStatFilename);
-  // std::ofstream ofile(
-  //     "/home/ds/projects/udacity-cpp-projects/CppND-System-Monitor/"
-  //     "process_uptime.log");
-
   if (filestream.is_open()) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
     for (int i = 0; i <= 21; i++) {
       linestream >> uptime;
-      // ofile << "Pid: " << pid << " Uptime: " << uptime << "\n";
     }
   }
-  // ofile.close();
-  long process_uptime = std::stol(uptime) / sysconf(_SC_CLK_TCK);
+  long process_uptime = UpTime() - (std::stol(uptime) / sysconf(_SC_CLK_TCK));
   return process_uptime;
-  // return 0;
 }
