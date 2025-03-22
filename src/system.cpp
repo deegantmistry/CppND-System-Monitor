@@ -24,7 +24,7 @@ format. cpp for formatting the uptime.*/
 
 System::System() { cpu_ = Processor(); }
 
-// TODO: Return the system's CPU
+// DONE: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
 // DONE: Return a container composed of the system's processes
