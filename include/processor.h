@@ -1,5 +1,7 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
+#include <string>
+#include <vector>
 
 class Processor {
  public:
@@ -8,8 +10,7 @@ class Processor {
 
   // DONE: Declare any necessary private members
  private:
-  float user_, nice_, system_, idle_, iowait_, irq_, softirq_, steal_, guest_,
-      guest_nice_;
+  std::vector<std::string> cpu_stats_;
 };
 
 #endif

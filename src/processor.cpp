@@ -1,61 +1,41 @@
 #include "processor.h"
 
-#include <sstream>
 #include <string>
 
 #include "linux_parser.h"
 
-Processor::Processor() {
-  std::string line, key;
-  std::ifstream filestream(LinuxParser::kProcDirectory +
-                           LinuxParser::kStatFilename);
-  if (filestream.is_open()) {
-    getline(filestream, line);
-    std::istringstream linestream(line);
-    linestream >> key >> user_ >> nice_ >> system_ >> idle_ >> iowait_ >>
-        irq_ >> softirq_ >> steal_ >> guest_ >> guest_nice_;
-  }
-}
+Processor::Processor() : cpu_stats_(LinuxParser::CpuUtilization()) {}
 
 // DONE: Return the aggregate CPU utilization
 float Processor::Utilization() {
-  std::string line, key;
-  std::ifstream filestream(LinuxParser::kProcDirectory +
-                           LinuxParser::kStatFilename);
-  if (filestream.is_open()) {
-    float user, nice, system, idle, iowait, irq, softirq, steal, guest,
-        guest_nice;
+  std::vector<std::string> cpu_stats = LinuxParser::CpuUtilization();
 
-    getline(filestream, line);
-    std::istringstream linestream(line);
-    linestream >> key >> user >> nice >> system >> idle >> iowait >> irq >>
-        softirq >> steal >> guest >> guest_nice;
+  float PrevIdle = std::stof(cpu_stats_[LinuxParser::CPUStates::kIdle_]) +
+                   std::stof(cpu_stats_[LinuxParser::CPUStates::kIOwait_]);
 
-    float PrevIdle = idle_ + iowait_;
-    float Idle = idle + iowait;
+  float Idle = std::stof(cpu_stats[LinuxParser::CPUStates::kIdle_]) +
+               std::stof(cpu_stats[LinuxParser::CPUStates::kIOwait_]);
 
-    float PrevNonIdle = user_ + nice_ + system_ + irq_ + softirq_ + steal_;
-    float NonIdle = user + nice + system + irq + softirq + steal;
+  float PrevNonIdle = std::stof(cpu_stats_[LinuxParser::CPUStates::kUser_]) +
+                      std::stof(cpu_stats_[LinuxParser::CPUStates::kNice_]) +
+                      std::stof(cpu_stats_[LinuxParser::CPUStates::kSystem_]) +
+                      std::stof(cpu_stats_[LinuxParser::CPUStates::kIRQ_]) +
+                      std::stof(cpu_stats_[LinuxParser::CPUStates::kSoftIRQ_]) +
+                      std::stof(cpu_stats_[LinuxParser::CPUStates::kSteal_]);
 
-    float PrevTotal = PrevIdle + PrevNonIdle;
-    float Total = Idle + NonIdle;
+  float NonIdle = std::stof(cpu_stats[LinuxParser::CPUStates::kUser_]) +
+                  std::stof(cpu_stats[LinuxParser::CPUStates::kNice_]) +
+                  std::stof(cpu_stats[LinuxParser::CPUStates::kSystem_]) +
+                  std::stof(cpu_stats[LinuxParser::CPUStates::kIRQ_]) +
+                  std::stof(cpu_stats[LinuxParser::CPUStates::kSoftIRQ_]) +
+                  std::stof(cpu_stats[LinuxParser::CPUStates::kSteal_]);
 
-    float totald = Total - PrevTotal;
-    float idled = Idle - PrevIdle;
+  float PrevTotal = PrevIdle + PrevNonIdle;
+  float Total = Idle + NonIdle;
 
-    user_ = user;
-    nice_ = nice;
-    system_ = system;
-    idle_ = idle;
-    iowait_ = iowait;
-    irq_ = irq;
-    softirq_ = softirq;
-    steal_ = steal;
-    guest_ = guest;
-    guest_nice_ = guest_nice;
+  float totald = Total - PrevTotal;
+  float idled = Idle - PrevIdle;
 
-    return (totald - idled) / totald;
-  }
-
-  return 0.0;
+  cpu_stats_ = cpu_stats;
+  return (totald - idled) / totald;
 }
