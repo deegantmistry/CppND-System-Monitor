@@ -41,8 +41,6 @@ vector<Process>& System::Processes() {
   }
 
   // ofile.close();
-  std::sort(processes_.begin(), processes_.end(),
-            [](const Process p1, const Process p2) { return p1 < p2; });
   return processes_;
 }
 
