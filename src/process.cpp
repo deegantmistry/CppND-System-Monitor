@@ -28,13 +28,14 @@ float Process::CpuUtilization() {
   if (filestream.is_open()) {
     std::getline(filestream, line);
     std::istringstream linestream(line);
-    for (int i = 1; i <= 13; i++) {
+    for (int i = 0; i <= 12; i++) {
       linestream >> discard;
     }
     linestream >> utime >> stime >> cutime >> cstime >> random;
     long total_time = utime + stime;
     total_time += cutime + cstime;
-    return ((total_time / sysconf(_SC_CLK_TCK)) / uptime);
+    cpu_utilization_ = (total_time / sysconf(_SC_CLK_TCK)) / uptime;
+    return cpu_utilization_;
   }
   return 0.0;
 }
@@ -53,6 +54,9 @@ long int Process::UpTime() { return LinuxParser::UpTime(pid_); }
 
 // TODO: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a [[maybe_unused]]) const {
-  return true;
+bool Process::operator<(Process const &a) const {
+  if (this->cpu_utilization_ < a.cpu_utilization_) {
+    return true;
+  }
+  return false;
 }
