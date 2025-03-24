@@ -119,7 +119,7 @@ long LinuxParser::ActiveJiffies() { return 0; }
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
 
-// TODO: Read and return CPU utilization
+// DONE: Read and return CPU utilization
 vector<string> LinuxParser::CpuUtilization() {
   vector<string> stats{};
   std::string line, key, stat;
@@ -235,13 +235,11 @@ string LinuxParser::User(int pid) {
       std::replace(line.begin(), line.end(), ':', ' ');
       std::istringstream linestream(line);
       linestream >> user >> enc_passwd >> xuid;
-
       if (xuid == uid) {
         return user;
       }
     }
   }
-
   return string();
 }
 
