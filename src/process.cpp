@@ -32,9 +32,10 @@ float Process::CpuUtilization() {
       linestream >> discard;
     }
     linestream >> utime >> stime >> cutime >> cstime >> random;
-    long total_time = utime + stime;
+    float total_time = utime + stime;
     total_time += cutime + cstime;
-    return ((total_time / sysconf(_SC_CLK_TCK)) / uptime);
+    cpu_utilization_ = (total_time / sysconf(_SC_CLK_TCK)) / uptime;
+    return cpu_utilization_;
   }
   return 0.0;
 }
@@ -51,8 +52,8 @@ string Process::User() { return LinuxParser::User(pid_); }
 // DONE: Return the age of this process (in seconds)
 long int Process::UpTime() { return LinuxParser::UpTime(pid_); }
 
-// TODO: Overload the "less than" comparison operator for Process objects
+// DONE: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
-bool Process::operator<(Process const& a [[maybe_unused]]) const {
-  return true;
+bool Process::operator<(Process const& a) const {
+  return a.cpu_utilization_ < this->cpu_utilization_;
 }

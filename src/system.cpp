@@ -2,6 +2,7 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <set>
 #include <string>
@@ -22,25 +23,28 @@ system."
 You need to properly format the uptime. Refer to the comments mentioned in
 format. cpp for formatting the uptime.*/
 
-System::System() { cpu_ = Processor(); }
+System::System() {
+  cpu_ = Processor();
+  for (int pid : LinuxParser::Pids()) {
+    Process p(pid);
+    processes_.push_back(p);
+  }
+}
 
 // DONE: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
 // DONE: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
-  // string log_file =
-  //     "/home/ds/projects/udacity-cpp-projects/CppND-System-Monitor/"
-  //     "process_uptime.log";
-  // std::ofstream ofile(log_file, std::ios::app);
+  string log_file =
+      "/home/ds/projects/udacity-cpp-projects/CppND-System-Monitor/"
+      "process_uptime.log";
+  std::ofstream ofile(log_file, std::ios::app);
 
-  for (int pid : LinuxParser::Pids()) {
-    // ofile << "Pid: " << pid << "\n";
-    Process p(pid);
-    processes_.push_back(p);
-  }
+  ofile << "processes_ size = " << processes_.size() << "\n";
+  ofile.close();
 
-  // ofile.close();
+  std::sort(processes_.begin(), processes_.end());
   return processes_;
 }
 
