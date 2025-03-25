@@ -33,7 +33,7 @@ float Process::CpuUtilization() {
     }
     linestream >> utime >> stime >> cutime >> cstime >> random;
     float total_time = utime + stime;
-    total_time += cutime + cstime;
+    // total_time += cutime + cstime;
     cpu_utilization_ = (total_time / sysconf(_SC_CLK_TCK)) / uptime;
     return cpu_utilization_;
   }
@@ -55,5 +55,5 @@ long int Process::UpTime() { return LinuxParser::UpTime(pid_); }
 // DONE: Overload the "less than" comparison operator for Process objects
 // REMOVE: [[maybe_unused]] once you define the function
 bool Process::operator<(Process const& a) const {
-  return a.cpu_utilization_ < this->cpu_utilization_;
+  return (100 * a.cpu_utilization_) < (100 * this->cpu_utilization_);
 }
