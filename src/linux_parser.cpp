@@ -137,6 +137,26 @@ vector<string> LinuxParser::CpuUtilization() {
   return {};
 }
 
+vector<string> LinuxParser::ProcessCpuUtilization(int pid) {
+  vector<string> process_stats{};
+  string line, discard, utime, stime;
+  std::ifstream filestream(LinuxParser::kProcDirectory + to_string(pid) +
+                           LinuxParser::kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    for (int i = 1; i <= 13; i++) {
+      linestream >> discard;
+    }
+    linestream >> utime >> stime;
+    process_stats.push_back(utime);
+    process_stats.push_back(stime);
+
+    return process_stats;
+  }
+  return {};
+}
+
 // DONE: Read and return the total number of processes
 int LinuxParser::TotalProcesses() {
   string line, key;
