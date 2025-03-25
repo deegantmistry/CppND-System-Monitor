@@ -37,19 +37,7 @@ Processor& System::Cpu() { return cpu_; }
 
 // DONE: Return a container composed of the system's processes
 vector<Process>& System::Processes() {
-  string log_file =
-      "/home/ds/projects/udacity-cpp-projects/CppND-System-Monitor/"
-      "process_uptime.log";
-  std::ofstream ofile(log_file, std::ios::app);
-
   std::sort(processes_.begin(), processes_.end());
-
-  ofile << "\n\nprocesses_ size = " << processes_.size() << "\n";
-  for (Process p : processes_) {
-    ofile << "Pid: " << p.Pid() << ", cpu: " << p.CpuUtilization() << "\n";
-  }
-
-  ofile.close();
   return processes_;
 }
 
