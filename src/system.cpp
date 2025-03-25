@@ -29,6 +29,7 @@ System::System() {
     Process p(pid);
     processes_.push_back(p);
   }
+  std::sort(processes_.begin(), processes_.end());
 }
 
 // DONE: Return the system's CPU
@@ -41,10 +42,14 @@ vector<Process>& System::Processes() {
       "process_uptime.log";
   std::ofstream ofile(log_file, std::ios::app);
 
-  ofile << "processes_ size = " << processes_.size() << "\n";
-  ofile.close();
-
   std::sort(processes_.begin(), processes_.end());
+
+  ofile << "\n\nprocesses_ size = " << processes_.size() << "\n";
+  for (Process p : processes_) {
+    ofile << "Pid: " << p.Pid() << ", cpu: " << p.CpuUtilization() << "\n";
+  }
+
+  ofile.close();
   return processes_;
 }
 
