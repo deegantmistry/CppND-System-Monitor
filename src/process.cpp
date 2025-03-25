@@ -3,17 +3,17 @@
 #include <unistd.h>
 
 #include <cctype>
+#include <sstream>
 #include <string>
+#include <vector>
 
 #include "linux_parser.h"
 
 using std::string;
+using std::to_string;
 using std::vector;
 
-Process::Process(int pid)
-    : pid_(pid),
-      process_stats_(LinuxParser::ProcessCpuUtilization(pid)),
-      uptime_(LinuxParser::UpTime(pid)) {}
+Process::Process(int pid) : pid_(pid) {}
 
 // DONE: Return this process's ID
 int Process::Pid() { return pid_; }
@@ -21,25 +21,23 @@ int Process::Pid() { return pid_; }
 // DONE: Return this process's CPU utilization
 float Process::CpuUtilization() {
   long uptime = LinuxParser::UpTime(pid_);
-  vector<string> process_stats = LinuxParser::ProcessCpuUtilization(pid_);
-
-  float prev_total_time =
-      std::stof(process_stats_[LinuxParser::ProcessCPUStates::kUtime_]) +
-      std::stof(process_stats_[LinuxParser::ProcessCPUStates::kStime_]);
-
-  float total_time =
-      std::stof(process_stats[LinuxParser::ProcessCPUStates::kUtime_]) +
-      std::stof(process_stats[LinuxParser::ProcessCPUStates::kStime_]);
-
-  float total_time_diff = total_time - prev_total_time;
-  long uptime_diff = uptime - uptime_;
-
-  cpu_utilization_ = (total_time_diff / sysconf(_SC_CLK_TCK)) / uptime_diff;
-
-  process_stats_ = process_stats;
-  uptime_ = uptime;
-
-  return cpu_utilization_;
+  string line, discard;
+  long utime, stime, cutime, cstime, random;
+  std::ifstream filestream(LinuxParser::kProcDirectory + to_string(pid_) +
+                           LinuxParser::kStatFilename);
+  if (filestream.is_open()) {
+    std::getline(filestream, line);
+    std::istringstream linestream(line);
+    for (int i = 1; i <= 13; i++) {
+      linestream >> discard;
+    }
+    linestream >> utime >> stime >> cutime >> cstime >> random;
+    float total_time = utime + stime;
+    // total_time += cutime + cstime;
+    cpu_utilization_ = (total_time / sysconf(_SC_CLK_TCK)) / uptime;
+    return cpu_utilization_;
+  }
+  return 0.0;
 }
 
 // DONE: Return the command that generated this process
